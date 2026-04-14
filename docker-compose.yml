@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  # База данных PostgreSQL
+  db:
+    image: postgres:latest
+    container_name: tor_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres           # Логин для БД
+      POSTGRES_PASSWORD: postgres        # Пароль для БД
+      POSTGRES_DB: tor_db      # Название БД при создании
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+  # Панель управления pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_panel
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com  # Логин для входа в админку
+      PGADMIN_DEFAULT_PASSWORD: root          # Пароль для входа в админку
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

@@ -1,0 +1,34 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: waittor
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tor_db
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "mcar7service@gmail.com"
+    password: ${EMAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+tor:
+  url:
+    login: "https://rutracker.org/forum/login.php"
+    search: "https://rutracker.org/forum/tracker.php?f=%s&nm=%s"
+  authenticate:
+    login: ${TOR_LOGIN}
+    password: ${TOR_PASS}
