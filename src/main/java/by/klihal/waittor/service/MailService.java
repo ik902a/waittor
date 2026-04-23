@@ -53,20 +53,21 @@ public class MailService {
     public String buildTable(String name, List<Movie> movies) {
         String htmlTableHeader = String.format("""
                 <h3 style="color: #007bff;">%s</h3>
-                <hr>
                 <table style="width: 100%%; border-collapse: collapse; margin: 20px 0; font-family: Arial, sans-serif;">
                     <tbody>
                 """, name);
         String htmlTableFooter = """
                     </tbody>
                 </table>
+                <hr>
                 """;
         String middlePart = movies.stream()
                 .map(movie -> String.format("""
                         <tr>
                                <td style="padding: 12px; border: 1px solid #ddd;">%s</td>
                                <td style="padding: 12px; border: 1px solid #ddd;">%s</td>
-                        </tr>""", movie.title(), movie.link()))
+                               <td style="padding: 12px; border: 1px solid #ddd;">%s</td>
+                        </tr>""", movie.title(), movie.size(), movie.link()))
                 .collect(Collectors.joining("\n"));
 
         return htmlTableHeader + middlePart + htmlTableFooter;

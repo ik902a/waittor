@@ -2,18 +2,19 @@ package by.klihal.waittor.service;
 
 import by.klihal.waittor.model.Movie;
 import by.klihal.waittor.model.Torrent;
+import by.klihal.waittor.model.TorrentType;
 import by.klihal.waittor.repo.TorRepository;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class DataService {
@@ -40,29 +41,21 @@ public class DataService {
     }
 
     private void askTracker(List<Torrent> torrents) {
-        Map<Boolean, List<Torrent>> partitioned = torrents.stream()
+        System.out.println("MOVIES:");
+        List<Torrent> movies = torrents.stream()
                 .filter(tor -> tor.getRelease() == null || LocalDate.now().isAfter(tor.getRelease()))
-                .collect(Collectors.partitioningBy(tor -> tor.getSeries() == null));
+                .peek(m -> System.out.println("-" + m.getName()))
+                .toList();
 
-        List<Torrent> movie = partitioned.get(true);
-        List<Torrent> series = partitioned.get(false);
-        movie.forEach(m -> System.out.println("Movie-" + m.getName()));
-        series.forEach(s -> System.out.println("Series-" + s.getName()));
-        Map<String, String> cookieCache = null;
-        StringBuilder tables = new StringBuilder();
-        if (!movie.isEmpty()) {
-            cookieCache = trackerConnectionService.authenticate();
-            tables.append(collectMovieTables(movie, cookieCache));
+        if (movies.isEmpty()) {
+            return;
         }
 
-        if (!series.isEmpty()) {
-            if (cookieCache == null) {
-                cookieCache = trackerConnectionService.authenticate();
-            }
-            tables.append(collectSeriesTables(series, cookieCache));
+        Map<String, String> cookieCache = trackerConnectionService.authenticate();
+        String tables = collectMovieTables(movies, cookieCache);
+        if (StringUtils.hasText(tables)) {
+            mailService.sendLetter(tables);
         }
-
-        mailService.sendLetter(tables.toString());
     }
 
     private String collectMovieTables(List<Torrent> movie, Map<String, String> cookieCache) {
@@ -81,52 +74,60 @@ public class DataService {
                 for (Element row : rows) {
                     String title = row.select(".t-title-col a").text();
                     String link = "https://rutracker.org/forum/" + row.select(".t-title-col a").attr("href");
-                    String size = row.select(".t-size-col").text();
+                    String size = row.select(".tor-size").text();
                     System.out.println("Фильм: " + title + " | Размер: " + size + " | Ссылка: " + link);
-                    movies.add(new Movie(title, link));
+
+                    if (TorrentType.SERIES == torrent.getTorrentType()) {
+                        boolean isNewSeries = checkNumberSeries(title, torrent);
+                        if (!isNewSeries) {
+                            break;
+                        }
+                    }
+                    movies.add(new Movie(title, size, link));
                 }
-                tables.append("\n").append(mailService.buildTable(torrent.getName(), movies));
+
+                if (!movies.isEmpty()) {
+                    tables.append("\n").append(mailService.buildTable(torrent.getName(), movies));
+                }
+                pause();
             }
         }
         return tables.toString();
     }
 
-    private String collectSeriesTables(List<Torrent> series, Map<String, String> cookieCache) {
-        StringBuilder tables = new StringBuilder();
-        for (Torrent torrent : series) {
-            if (torrent.getTorrentType() == null && torrent.getTorrentType().getValue() == null) {
-                System.out.println("[ERROR][Problem with torrent type]");
-                break;
-            }
-
-            Document documnent = trackerConnectionService.search(torrent, cookieCache);
-            // 4. Парсим результаты (id таблицы "tor-tbl")
-            Elements rows = documnent.select("#tor-tbl tr.tCenter");
-            if (rows.hasText()) {
-                List<Movie> movies = new ArrayList<>();
-                for (Element row : rows) {
-                    String title = row.select(".t-title-col a").text();
-                    String link = "https://rutracker.org/forum/" + row.select(".t-title-col a").attr("href");
-                    String size = row.select(".t-size-col").text();
-                    System.out.println("Фильм: " + title + " | Размер: " + size + " | Ссылка: " + link);
-                    movies.add(new Movie(title, link));
-                }
-                tables.append("\n").append(mailService.buildTable(torrent.getName(), movies));
-            }
-            pause();
-
-
+    private boolean checkNumberSeries(String title, Torrent torrent) {
+        if (torrent.getSeries() == null) {
+            return true;
         }
-        return tables.toString();
+
+        String target = "Серии: 1-";
+        int index = title.indexOf(target);
+        String seriesNumber = "";
+        if (index != -1) {
+            int nextCharIndex = index + target.length();
+
+            if (nextCharIndex < title.length()) {
+                seriesNumber = title.charAt(nextCharIndex) + String.valueOf(title.charAt(nextCharIndex + 1)).trim();
+                System.out.println("Следующий символ: '" + seriesNumber + "'");
+            } else {
+                System.out.println("Искомая строка в самом конце, следующего символа нет.");
+            }
+        } else {
+            System.out.println("[Серии не найдены][" + title + "]");
+        }
+        if (seriesNumber.matches("\\d+") &&
+            Integer.parseInt(seriesNumber) > torrent.getSeries()) {
+            return true;
+        }
+        return false;
     }
 
     private void pause() {
         try {
-            Thread.sleep(10000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             // Восстановление статуса прерывания потока
             Thread.currentThread().interrupt();
         }
     }
-
 }
