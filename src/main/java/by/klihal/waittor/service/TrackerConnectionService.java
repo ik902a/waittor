@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Service
@@ -40,7 +42,7 @@ public class TrackerConnectionService {
                     .cookies(cookieCache)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
                     .execute();
-            System.out.println("Response status - " + response.statusCode());
+            System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + "] Response status - " + response.statusCode());
             return response.parse();
         } catch (IOException e) {
             throw new RuntimeException(e);
