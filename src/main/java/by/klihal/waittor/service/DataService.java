@@ -3,16 +3,16 @@ package by.klihal.waittor.service;
 import by.klihal.waittor.model.Movie;
 import by.klihal.waittor.model.Torrent;
 import by.klihal.waittor.model.TorrentType;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,14 +50,14 @@ public class DataService {
         }
 
         Map<String, String> cookieCache = trackerConnectionService.authenticate();
-        String tables = collectMovieTables(movies, cookieCache);
-        if (StringUtils.hasText(tables)) {
+        Multimap<String, Movie> tables = collectMovieTables(movies, cookieCache);
+        if (!tables.isEmpty()) {
             mailService.sendLetter(tables);
         }
     }
 
-    private String collectMovieTables(List<Torrent> movie, Map<String, String> cookieCache) {
-        StringBuilder tables = new StringBuilder();
+    private Multimap<String, Movie> collectMovieTables(List<Torrent> movie, Map<String, String> cookieCache) {
+        Multimap<String, Movie> tables = ArrayListMultimap.create();
         for (Torrent torrent : movie) {
             if (torrent.getTorrentType() == null && torrent.getTorrentType().getValue() == null) {
                 System.out.println("[ERROR][Problem with torrent type]");
@@ -68,7 +68,6 @@ public class DataService {
             // 4. Парсим результаты (id таблицы "tor-tbl")
             Elements rows = documnent.select("#tor-tbl tr.tCenter");
             if (rows.hasText()) {
-                List<Movie> movies = new ArrayList<>();
                 for (Element row : rows) {
                     String title = row.select(".t-title-col a").text();
                     String link = "https://rutracker.org/forum/" + row.select(".t-title-col a").attr("href");
@@ -81,19 +80,18 @@ public class DataService {
                             break;
                         }
                     }
-                    movies.add(new Movie(title, size, link));
+                    tables.put(torrent.getName(), new Movie(title, size, link));
                 }
 
-                if (!movies.isEmpty()) {
-                    if (TorrentType.SERIES == torrent.getTorrentType()) {
-                        torService.plusSeries(torrent.getId());
-                    }
-                    tables.append("\n").append(mailService.buildTable(torrent.getName(), movies));
+                System.out.println(tables.entries());
+                if (TorrentType.SERIES == torrent.getTorrentType() && tables.containsKey(torrent.getName())) {
+                    torService.plusSeries(torrent.getId());
                 }
             }
             pause();
         }
-        return tables.toString();
+
+        return tables;
     }
 
     private boolean checkNumberSeries(String title, Torrent torrent) {

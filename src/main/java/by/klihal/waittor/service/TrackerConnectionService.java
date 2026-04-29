@@ -4,19 +4,22 @@ import by.klihal.waittor.model.Torrent;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Service
 public class TrackerConnectionService {
 
+    private static final Logger log = LoggerFactory.getLogger(TrackerConnectionService.class);
     private static final Map<String, String> headers = Map.of( // TODO ofEntries NOSONAR
             "User-Agent", "Mozilla/5.0",
             "Accept-Charset", "utf-8"
@@ -42,7 +45,7 @@ public class TrackerConnectionService {
                     .cookies(cookieCache)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
                     .execute();
-            System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + "] Response status - " + response.statusCode());
+            System.out.println("[" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "] " + torrent.getName() + " - " + response.statusCode());
             return response.parse();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -70,12 +73,11 @@ public class TrackerConnectionService {
                 System.out.println(response.body());
             } else {
                 System.out.println("Авторизация успешна! Получено кук: " + cookies.size());
-                cookies.forEach((k, v) -> System.out.println(k + "=" + v));
             }
 
             return cookies;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Ошибка при выполнении операции: {}", e.getMessage(), e);
         }
         return Map.of();
     }

@@ -1,0 +1,23 @@
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Новые раздачи!</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #333;">
+<h1 style="color: #007bff;">Привет, найдены новые раздачи!</h1>
+<hr>
+<ul>
+    <li th:each="entry : ${movies.asMap()}">
+        <h3 th:text="${entry.key}" style="color: #007bff;"></h3>
+        <table style="width: 100%%; border-collapse: collapse; margin: 20px 0; font-family: Arial, sans-serif;">
+            <tr th:each="movie : ${entry.value}">
+                <td th:text="${movie.title}" style="padding: 12px; border: 1px solid #ddd;"></td>
+                <td th:text="${movie.size}" style="padding: 12px; border: 1px solid #ddd;"></td>
+                <td th:text="${movie.link}" style="padding: 12px; border: 1px solid #ddd;"></td>
+            </tr>
+        </table>
+    </li>
+</ul>
+<hr>
+</body>
+</html>
