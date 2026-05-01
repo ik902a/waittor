@@ -1,5 +1,7 @@
 package by.klihal.waittor.service;
 
+import by.klihal.waittor.dto.TorDto;
+import by.klihal.waittor.mapper.TorMapper;
 import by.klihal.waittor.model.Torrent;
 import by.klihal.waittor.repo.TorRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,14 +15,21 @@ import java.util.Optional;
 public class TorService {
 
     private final TorRepository repository;
+    private final TorMapper torMapper;
 
-    public TorService(TorRepository repository) {
+    public TorService(TorRepository repository, TorMapper torMapper) {
         this.repository = repository;
+        this.torMapper = torMapper;
     }
 
     @Transactional
     public List<Torrent> findAll() {
         return repository.findAll();
+    }
+
+    @Transactional
+    public List<TorDto> findAllDto() {
+        return torMapper.toDtoList(repository.findAll());
     }
 
     @Transactional
@@ -31,5 +40,12 @@ public class TorService {
         torrent.setSeries(Optional.ofNullable(torrent.getSeries())
                 .map(s -> s + 1)
                 .orElse(1));
+    }
+
+    public void save(TorDto tor) {
+        System.out.println(tor);
+        repository.save(
+                torMapper.toEntity(tor)
+        );
     }
 }

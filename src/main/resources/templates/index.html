@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <meta charset="UTF-8">
+    <title>Список фильмов</title>
+    <style>
+        table { width: 50%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+
+<h2>Фильмы</h2>
+
+<div id="tor-table-container">
+<table th:fragment="tor-table">
+    <thead>
+    <tr>
+        <th>Название</th>
+        <th>Дата Релиза</th>
+        <th>Тип фильма</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="tor : ${tors}">
+        <td th:text="${tor.name}">Название</td>
+        <td th:text="${#temporals.format(tor.release, 'dd.MM.yyyy')}">01.01.2024</td>
+        <td th:text="${tor.torrentType.name}">Тип</td>
+    </tr>
+    </tbody>
+</table>
+</div>
+
+<button onclick="document.getElementById('add-form').style.display='block'">Добавить</button>
+
+<div id="add-form" style="display:none; margin-top: 20px;">
+    <form hx-post="/tors/add"
+          hx-target="#tor-table-container"
+          hx-swap="innerHTML"
+          onsubmit="this.style.display='none'">
+
+        <label>
+            <input type="text" name="name" placeholder="Имя" required>
+        </label>
+        <label>
+            <input type="date" name="dateRaw">
+        </label>
+
+        <label>
+            <select name="type">
+                <option th:each="type : ${T(by.klihal.waittor.model.TorrentType).values()}"
+                        th:value="${type}" th:text="${type.name}"></option>
+            </select>
+        </label>
+
+        <button type="submit">Сохранить</button>
+    </form>
+</div>
+
+</body>
+</html>

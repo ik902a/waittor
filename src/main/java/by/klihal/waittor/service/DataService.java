@@ -83,7 +83,6 @@ public class DataService {
                     tables.put(torrent.getName(), new Movie(title, size, link));
                 }
 
-                System.out.println(tables.entries());
                 if (TorrentType.SERIES == torrent.getTorrentType() && tables.containsKey(torrent.getName())) {
                     torService.plusSeries(torrent.getId());
                 }
@@ -109,7 +108,7 @@ public class DataService {
                 seriesNumber = title.charAt(nextCharIndex) + String.valueOf(title.charAt(nextCharIndex + 1)).trim();
                 System.out.println("Следующий символ: '" + seriesNumber + "'");
             } else {
-                System.out.println("Искомая строка в самом конце, следующего символа нет.");
+                System.out.println("Искомая строка в самом конце, следующего символа нет");
             }
         } else {
             System.out.println("[Серии не найдены][" + title + "]");
