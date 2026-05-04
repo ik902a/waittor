@@ -14,4 +14,4 @@ WORKDIR /app
 # Копируем только jar
 COPY --from=build /app/build/libs/*.jar waittor.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "waittor.jar"]
+ENTRYPOINT ["java", "-jar", "waittor.jar", "--spring.profiles.active=prod"]

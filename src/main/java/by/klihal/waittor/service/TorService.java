@@ -43,9 +43,12 @@ public class TorService {
     }
 
     public void save(TorDto tor) {
-        System.out.println(tor);
         repository.save(
                 torMapper.toEntity(tor)
         );
+    }
+
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 }
