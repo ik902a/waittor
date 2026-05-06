@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <script src="https://unpkg.com/htmx.org"></script>
     <meta charset="UTF-8">
@@ -46,7 +47,7 @@
     </div>
 </div>
 
-<button class="btn" onclick="openAddForm()">+ Добавить</button>
+<button sec:authorize="hasRole('ADMIN')"  class="btn" onclick="openAddForm()">+ Добавить</button>
 
 <div id="form-container" style="display:none; margin-top: 20px;" class="form-card">
     <form th:fragment="torDto"

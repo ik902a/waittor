@@ -3,6 +3,7 @@ package by.klihal.waittor.controller;
 import by.klihal.waittor.dto.TorDto;
 import by.klihal.waittor.service.TorService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +29,7 @@ public class TorController {
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public String addTor(@Valid @ModelAttribute("torDto") TorDto tor,
                          BindingResult bindingResult,
                          Model model) {
