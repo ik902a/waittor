@@ -1,26 +1,25 @@
 package by.klihal.waittor.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 
-@Entity
+@Table
 public class Torrent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    @Enumerated(EnumType.STRING)
-    private TorrentType torrentType;
+    private String torrentType;
     private LocalDate release;
     private Integer series;
 
     public Torrent() {
     }
 
-    public Torrent(Long id, String name, TorrentType torrentType, LocalDate release, Integer series) {
+    public Torrent(Long id, String name, String torrentType, LocalDate release, Integer series) {
         this.id = id;
         this.name = name;
         this.torrentType = torrentType;
@@ -44,11 +43,11 @@ public class Torrent {
         this.name = name;
     }
 
-    public TorrentType getTorrentType() {
+    public String getTorrentType() {
         return torrentType;
     }
 
-    public void setTorrentType(TorrentType torrentType) {
+    public void setTorrentType(String torrentType) {
         this.torrentType = torrentType;
     }
 

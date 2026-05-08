@@ -3,13 +3,10 @@ server:
 spring:
   application:
     name: waittor
-  datasource:
-    url: jdbc:postgresql://${PG_HOST}:${PG_PORT}/tor_db
+  r2dbc:
+    url: r2dbc:postgresql://${PG_HOST}:${PG_PORT}/tor_db
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASS}
-  jpa:
-    hibernate:
-      ddl-auto:  validate
   mail:
     host: smtp.gmail.com
     port: 587

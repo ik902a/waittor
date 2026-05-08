@@ -6,10 +6,9 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Controller
 @RequestMapping("/tors")
@@ -22,31 +21,28 @@ public class TorController {
     }
 
     @GetMapping
-    public String showPage(Model model) {
-        List<TorDto> torDos = torService.findAllDto();
+    public Mono<String> showPage(Model model) {
+        Flux<TorDto> torDos = torService.findAll();
         model.addAttribute("tors", torDos);
-        return "index";
+        return Mono.just("index");
     }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
-    public String addTor(@Valid @ModelAttribute("torDto") TorDto tor,
-                         BindingResult bindingResult,
+    public Mono<String> addTor(@Valid @ModelAttribute("torDto") TorDto tor,
                          Model model) {
         torService.save(tor);
 
         model.addAttribute("tors", torService.findAll());
-        // 3. Возвращаем ТУ ЖЕ страницу, но указываем имя фрагмента
-        // Spring вернет только HTML код таблицы из файла users-list.html
-        return "index :: tor-table";
+        return Mono.just("index :: tor-table");
     }
 
     @DeleteMapping("/delete/{id}")
     @ResponseBody // <-- Обязательно добавьте это!
-    public String deleteTor(@PathVariable Long id, Model model) {
+    public Mono<String> deleteTor(@PathVariable Long id, Model model) {
         torService.delete(id);
 
         model.addAttribute("tors", torService.findAll());
-        return "";
+        return Mono.just("");
     }
 }

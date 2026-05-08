@@ -4,11 +4,11 @@ import by.klihal.waittor.dto.TorDto;
 import by.klihal.waittor.mapper.TorMapper;
 import by.klihal.waittor.model.Torrent;
 import by.klihal.waittor.repo.TorRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,32 +23,40 @@ public class TorService {
     }
 
     @Transactional
-    public List<Torrent> findAll() {
-        return repository.findAll();
-    }
-
-    @Transactional
-    public List<TorDto> findAllDto() {
-        return torMapper.toDtoList(repository.findAll());
+    public Flux<TorDto> findAll() {
+        return repository.findAll()
+                .map(torMapper::toDto);
     }
 
     @Transactional
     public void plusSeries(Long id) {
-        Torrent torrent = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Torrent with id " + id + " not found"));
-
-        torrent.setSeries(Optional.ofNullable(torrent.getSeries())
-                .map(s -> s + 1)
-                .orElse(1));
+        repository.findById(id)
+                .flatMap(tor -> {
+                    tor.setSeries(Optional.ofNullable(tor.getSeries())
+                            .map(s -> s + 1)
+                            .orElse(1));
+                    return repository.save(tor);
+                });
     }
 
-    public void save(TorDto tor) {
-        repository.save(
-                torMapper.toEntity(tor)
-        );
+    @Transactional
+    public Mono<TorDto> save(TorDto tor) {
+        return repository.save(
+                        torMapper.toEntity(tor)
+                ).map(torMapper::toDto);
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public Mono<TorDto> update(Long id, TorDto userDto) {
+        return repository.findById(id)
+                .flatMap(existingUser -> {
+                    Torrent updatedEntity = new Torrent();
+                    return repository.save(updatedEntity);
+                })
+                .map(torMapper::toDto);
+    }
+
+    @Transactional
+    public Mono<Void> delete(Long id) {
+        return repository.deleteById(id);
     }
 }

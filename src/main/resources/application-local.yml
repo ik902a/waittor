@@ -6,3 +6,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        web: DEBUG

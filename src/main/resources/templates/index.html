@@ -5,7 +5,7 @@
     <script src="https://unpkg.com/htmx.org"></script>
     <meta charset="UTF-8">
     <title>Фильмы</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
@@ -47,7 +47,7 @@
     </div>
 </div>
 
-<button sec:authorize="hasRole('ADMIN')"  class="btn" onclick="openAddForm()">+ Добавить</button>
+<button th:if="${#authorization.expression('hasRole(''ADMIN'')')}" class="btn" onclick="openAddForm()">+ Добавить</button>
 
 <div id="form-container" style="display:none; margin-top: 20px;" class="form-card">
     <form th:fragment="torDto"

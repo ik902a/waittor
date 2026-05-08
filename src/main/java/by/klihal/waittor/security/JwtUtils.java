@@ -1,68 +1,74 @@
 package by.klihal.waittor.security;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
 
-    private final SecretKey secretKey = Jwts.SIG.HS256.key().build();
-    private final long expirationTime = 3600000; // 1 час
+    // В реальном проекте вынесите это в application.yml (минимум 32 символа)
+    private final String SECRET_KEY = "my-super-secret-key-for-jwt-authentication-which-is-long-enough";
+    private final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+    private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 час
 
-    // Генерируем токен из объекта Authentication или просто имени
-    public String generateToken(String username, List<String> roles) {
+    // 1. Генерируем токен
+    public String generateToken(String username, Collection<? extends GrantedAuthority> authorities) {
+        Map<String, Object> claims = new HashMap<>();
+        // Сохраняем роли в токен как список строк
+        claims.put("roles", authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList()));
+
         return Jwts.builder()
-                .subject(username)
-                .claim("roles", roles)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(secretKey, Jwts.SIG.HS256)
+                .claims(claims)           // Установка пользовательских утверждений
+                .subject(username)        // Установка sub
+                .issuedAt(new Date())     // Время выпуска
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Время истечения
+                .signWith(key, Jwts.SIG.HS256) // Новый способ указания алгоритма
                 .compact();
     }
 
-    // Валидация токена
-    public boolean validate(String token) {
+    // 2. Валидация токена
+    public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .verifyWith(secretKey)
+                    .verifyWith(key) // Вместо setSigningKey
                     .build()
-                    .parseSignedClaims(token);
+                    .parseSignedClaims(token); // Вместо parseClaimsJws
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (Exception e) {
+            // Здесь можно залогировать ошибку (истек, изменен и т.д.)
             return false;
         }
     }
 
-    public String getUsername(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+    // 3. Извлечение имени пользователя
+    public String extractUsername(String token) {
+        return getClaims(token).getSubject();
     }
 
-    public List<GrantedAuthority> getAuthorities(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-
-        @SuppressWarnings("unchecked")
-        List<String> roles = claims.get("roles", List.class);
-
+    // 4. Извлечение ролей
+    public List<GrantedAuthority> extractAuthorities(String token) {
+        List<String> roles = getClaims(token).get("roles", List.class);
         return roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(key)      // Замена setSigningKey
+                .build()
+                .parseSignedClaims(token) // Замена parseClaimsJws
+                .getPayload();
     }
 }

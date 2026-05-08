@@ -1,5 +1,6 @@
 package by.klihal.waittor.service;
 
+import by.klihal.waittor.dto.TorDto;
 import by.klihal.waittor.model.Movie;
 import by.klihal.waittor.model.Torrent;
 import by.klihal.waittor.model.TorrentType;
@@ -30,19 +31,21 @@ public class DataService {
     }
 
     public void begin() {
-        List<Torrent> torrents = readDatabase();
+        List<TorDto> torrents = readDatabase();
         askTracker(torrents);
     }
 
-    private List<Torrent> readDatabase() {
-        return torService.findAll();
+    private List<TorDto> readDatabase() {
+        return torService.findAll()
+                .collectList()
+                .block();
     }
 
-    private void askTracker(List<Torrent> torrents) {
+    private void askTracker(List<TorDto> torrents) {
         System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + "] MOVIES:");
-        List<Torrent> movies = torrents.stream()
-                .filter(tor -> tor.getRelease() == null || LocalDate.now().isAfter(tor.getRelease()))
-                .peek(m -> System.out.println("-" + m.getName()))
+        List<TorDto> movies = torrents.stream()
+                .filter(tor -> tor.release() == null || LocalDate.now().isAfter(tor.release()))
+                .peek(m -> System.out.println("-" + m.name()))
                 .toList();
 
         if (movies.isEmpty()) {
@@ -56,10 +59,10 @@ public class DataService {
         }
     }
 
-    private Multimap<String, Movie> collectMovieTables(List<Torrent> movie, Map<String, String> cookieCache) {
+    private Multimap<String, Movie> collectMovieTables(List<TorDto> movie, Map<String, String> cookieCache) {
         Multimap<String, Movie> tables = ArrayListMultimap.create();
-        for (Torrent torrent : movie) {
-            if (torrent.getTorrentType() == null && torrent.getTorrentType().getValue() == null) {
+        for (TorDto torrent : movie) {
+            if (torrent.torrentType() == null) {
                 System.out.println("[ERROR][Problem with torrent type]");
                 break;
             }
@@ -74,17 +77,17 @@ public class DataService {
                     String size = row.select(".tor-size").text();
                     System.out.println("Фильм: " + title + " | Размер: " + size);
 
-                    if (TorrentType.SERIES == torrent.getTorrentType()) {
+                    if (TorrentType.SERIES == torrent.torrentType()) {
                         boolean isNewSeries = checkNumberSeries(title, torrent);
                         if (!isNewSeries) {
                             break;
                         }
                     }
-                    tables.put(torrent.getName(), new Movie(title, size, link));
+                    tables.put(torrent.name(), new Movie(title, size, link));
                 }
 
-                if (TorrentType.SERIES == torrent.getTorrentType() && tables.containsKey(torrent.getName())) {
-                    torService.plusSeries(torrent.getId());
+                if (TorrentType.SERIES == torrent.torrentType() && tables.containsKey(torrent.name())) {
+                    torService.plusSeries(torrent.id());
                 }
             }
             pause();
@@ -93,8 +96,8 @@ public class DataService {
         return tables;
     }
 
-    private boolean checkNumberSeries(String title, Torrent torrent) {
-        if (torrent.getSeries() == null) {
+    private boolean checkNumberSeries(String title, TorDto torrent) {
+        if (torrent.series() == null) {
             return true;
         }
 
@@ -113,7 +116,7 @@ public class DataService {
         } else {
             System.out.println("[Серии не найдены][" + title + "]");
         }
-        if (seriesNumber.matches("\\d+") && Integer.parseInt(seriesNumber) > torrent.getSeries()) {
+        if (seriesNumber.matches("\\d+") && Integer.parseInt(seriesNumber) > torrent.series()) {
             return true;
         }
         return false;

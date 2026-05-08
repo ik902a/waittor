@@ -1,6 +1,6 @@
 package by.klihal.waittor.service;
 
-import by.klihal.waittor.model.Torrent;
+import by.klihal.waittor.dto.TorDto;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,10 +33,10 @@ public class TrackerConnectionService {
     @Value("${tor.authenticate.password}")
     private String password;
 
-    public Document search(Torrent torrent, Map<String, String> cookieCache) {
+    public Document search(TorDto torrent, Map<String, String> cookieCache) {
         // 1. Кодируем название для URL (обязательно для кириллицы)
-        String encodedName = URLEncoder.encode(torrent.getName(), StandardCharsets.UTF_8);
-        String torrentType = torrent.getTorrentType().getValue();
+        String encodedName = URLEncoder.encode(torrent.name(), StandardCharsets.UTF_8);
+        String torrentType = torrent.torrentType().getValue();
         // 2. Формируем строку запроса
         String url = String.format(searchUrl, torrentType, encodedName);
         // 3. Делаем запрос (нужно добавить user-agent, чтобы не блокировали)
@@ -45,7 +45,7 @@ public class TrackerConnectionService {
                     .cookies(cookieCache)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
                     .execute();
-            System.out.println("[" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "] " + torrent.getName() + " - " + response.statusCode());
+            System.out.println("[" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "] " + torrent.name() + " - " + response.statusCode());
             return response.parse();
         } catch (IOException e) {
             throw new RuntimeException(e);

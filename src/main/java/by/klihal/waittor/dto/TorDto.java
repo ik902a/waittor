@@ -11,5 +11,6 @@ public record TorDto(Long id,
                      String name,
                      @NotNull(message = "Необходимо сделать выбор")
                      TorrentType torrentType,
-                     LocalDate release) {
+                     LocalDate release,
+                     Integer series) {
 }

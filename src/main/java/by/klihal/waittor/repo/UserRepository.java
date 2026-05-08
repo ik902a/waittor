@@ -1,11 +1,12 @@
 package by.klihal.waittor.repo;
 
 import by.klihal.waittor.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends ReactiveCrudRepository<User, Long> {
 
-    User findByUsername(String username);
+    Mono<User> findByUsername(String username);
 }
