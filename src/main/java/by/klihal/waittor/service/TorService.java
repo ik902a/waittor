@@ -22,14 +22,14 @@ public class TorService {
         this.torMapper = torMapper;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Flux<TorDto> findAll() {
         return repository.findAll()
                 .map(torMapper::toDto);
     }
 
     @Transactional
-    public void plusSeries(Long id) {
+    public Mono<Void> plusSeries(Long id) {
         repository.findById(id)
                 .flatMap(tor -> {
                     tor.setSeries(Optional.ofNullable(tor.getSeries())
@@ -37,6 +37,7 @@ public class TorService {
                             .orElse(1));
                     return repository.save(tor);
                 });
+        return Mono.empty();
     }
 
     @Transactional

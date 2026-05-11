@@ -9,5 +9,4 @@ public class WaittorApplication {
     public static void main(String[] args) {
         SpringApplication.run(WaittorApplication.class, args);
     }
-
 }

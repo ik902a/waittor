@@ -4,7 +4,7 @@ spring:
   application:
     name: waittor
   r2dbc:
-    url: r2dbc:postgresql://${PG_HOST}:${PG_PORT}/tor_db
+    url: r2dbc:postgresql://${PG_HOST}:${PG_PORT}/tor_db?sslMode=DISABLE
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASS}
   mail:

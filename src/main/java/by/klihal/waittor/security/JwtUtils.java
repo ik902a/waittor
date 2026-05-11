@@ -2,7 +2,6 @@ package by.klihal.waittor.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,7 +16,7 @@ public class JwtUtils {
 
     // В реальном проекте вынесите это в application.yml (минимум 32 символа)
     private final String SECRET_KEY = "my-super-secret-key-for-jwt-authentication-which-is-long-enough";
-    private final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+    private final SecretKey key = Keys.hmacShaKeyFor(Base64.getUrlDecoder().decode(SECRET_KEY));
     private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 час
 
     // 1. Генерируем токен

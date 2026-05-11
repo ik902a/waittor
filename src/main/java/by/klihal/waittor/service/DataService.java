@@ -2,7 +2,6 @@ package by.klihal.waittor.service;
 
 import by.klihal.waittor.dto.TorDto;
 import by.klihal.waittor.model.Movie;
-import by.klihal.waittor.model.Torrent;
 import by.klihal.waittor.model.TorrentType;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -10,6 +9,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
+import reactor.core.Disposable;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,15 +31,14 @@ public class DataService {
         this.trackerConnectionService = trackerConnectionService;
     }
 
-    public void begin() {
-        List<TorDto> torrents = readDatabase();
-        askTracker(torrents);
-    }
-
-    private List<TorDto> readDatabase() {
+    public Disposable begin() {
         return torService.findAll()
-                .collectList()
-                .block();
+                .collectList()// Собираем всё в список //TODO refactoring
+                .flatMap(torrent -> {
+                    askTracker(torrent);
+                    return Mono.empty(); // Или возвращаем результат сохранения
+                })
+                .subscribe();
     }
 
     private void askTracker(List<TorDto> torrents) {
@@ -87,7 +87,7 @@ public class DataService {
                 }
 
                 if (TorrentType.SERIES == torrent.torrentType() && tables.containsKey(torrent.name())) {
-                    torService.plusSeries(torrent.id());
+                    torService.plusSeries(torrent.id()).subscribe();
                 }
             }
             pause();

@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   # База данных PostgreSQL
-  db:
+  tordb:
     image: postgres:18-alpine
     container_name: tor_container
     restart: always
@@ -29,14 +29,14 @@ services:
     ports:
       - "5051:80"
     depends_on:
-      - db
+      - tordb
   app:
     build: .
     container_name: waittor
     ports:
       - "8090:8080"
     depends_on:
-      db:
+      tordb:
         condition: service_healthy # Ждет, пока база будет реально готова
     environment:
       EMAIL_PASS: ${EMAIL_PASS}
@@ -46,8 +46,8 @@ services:
       POSTGRES_PASS: ${POSTGRES_PASS}
       PGADMIN_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_PASS: ${PGADMIN_PASS}
-      PG_HOST: ${PG_HOST}
-      PG_PORT: ${PG_PORT}
+      PG_HOST: tordb
+      PG_PORT: 5432
       TARGET_EMAIL: ${TARGET_EMAIL}
 
 volumes:

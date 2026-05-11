@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
+<!--      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
 <head>
     <script src="https://unpkg.com/htmx.org"></script>
     <meta charset="UTF-8">
@@ -47,7 +47,8 @@
     </div>
 </div>
 
-<button th:if="${#authorization.expression('hasRole(''ADMIN'')')}" class="btn" onclick="openAddForm()">+ Добавить</button>
+<!--<button th:if="${#authorization.expression('hasRole(''ADMIN'')')}" class="btn" onclick="openAddForm()">+ Добавить</button>-->
+<button class="btn" onclick="openAddForm()">+ Добавить</button>
 
 <div id="form-container" style="display:none; margin-top: 20px;" class="form-card">
     <form th:fragment="torDto"

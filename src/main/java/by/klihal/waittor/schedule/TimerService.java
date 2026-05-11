@@ -41,7 +41,7 @@ public class TimerService implements CommandLineRunner {
     @Override
     public void run(String @NonNull ... args) {
         if (!Arrays.asList(env.getActiveProfiles()).contains("local")) {
-        startSchedule();
+//            startSchedule();
         }
     }
 }

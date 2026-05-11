@@ -31,7 +31,7 @@ public class TorController {
     @PreAuthorize("hasRole('ADMIN')")
     public Mono<String> addTor(@Valid @ModelAttribute("torDto") TorDto tor,
                          Model model) {
-        torService.save(tor);
+        torService.save(tor).subscribe();
 
         model.addAttribute("tors", torService.findAll());
         return Mono.just("index :: tor-table");
@@ -40,7 +40,7 @@ public class TorController {
     @DeleteMapping("/delete/{id}")
     @ResponseBody // <-- Обязательно добавьте это!
     public Mono<String> deleteTor(@PathVariable Long id, Model model) {
-        torService.delete(id);
+        torService.delete(id).subscribe();
 
         model.addAttribute("tors", torService.findAll());
         return Mono.just("");
