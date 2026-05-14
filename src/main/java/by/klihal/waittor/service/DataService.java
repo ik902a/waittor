@@ -1,7 +1,7 @@
 package by.klihal.waittor.service;
 
 import by.klihal.waittor.dto.TorDto;
-import by.klihal.waittor.model.Movie;
+import by.klihal.waittor.dto.Movie;
 import by.klihal.waittor.model.TorrentType;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -32,7 +31,7 @@ public class DataService {
     }
 
     public Disposable begin() {
-        return torService.findAll()
+        return torService.findAllActual()
                 .collectList()// Собираем всё в список //TODO refactoring
                 .flatMap(torrent -> {
                     askTracker(torrent);
@@ -42,18 +41,14 @@ public class DataService {
     }
 
     private void askTracker(List<TorDto> torrents) {
-        System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + "] MOVIES:");
-        List<TorDto> movies = torrents.stream()
-                .filter(tor -> tor.release() == null || LocalDate.now().isAfter(tor.release()))
-                .peek(m -> System.out.println("-" + m.name()))
-                .toList();
-
-        if (movies.isEmpty()) {
+        if (torrents.isEmpty()) {
             return;
         }
+        System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + "] MOVIES:");
+        torrents.forEach(m -> System.out.println("-" + m.name()));
 
         Map<String, String> cookieCache = trackerConnectionService.authenticate();
-        Multimap<String, Movie> tables = collectMovieTables(movies, cookieCache);
+        Multimap<String, Movie> tables = collectMovieTables(torrents, cookieCache);
         if (!tables.isEmpty()) {
             mailService.sendLetter(tables);
         }

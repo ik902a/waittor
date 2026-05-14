@@ -1,14 +1,13 @@
 version: '3.8'
 services:
-  # База данных PostgreSQL
-  tordb:
+  postgres:
     image: postgres:18-alpine
     container_name: tor_container
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}          # Логин для БД
-      POSTGRES_PASSWORD: ${POSTGRES_PASS}        # Пароль для БД
-      POSTGRES_DB: tor_db      # Название БД при создании
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS}
+      POSTGRES_DB: tor_db
     ports:
       - "5430:5432"
     volumes:
@@ -19,24 +18,21 @@ services:
       timeout: 5s
       retries: 5
   # Панель управления pgAdmin
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin_panel
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}  # Логин для входа в админку
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASS}         # Пароль для входа в админку
-    ports:
-      - "5051:80"
-    depends_on:
-      - tordb
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    container_name: pgadmin_panel
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}  # Логин для входа в админку
+#      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASS}         # Пароль для входа в админку
+#    ports:
+#      - "5051:80"
   app:
     build: .
     container_name: waittor
     ports:
       - "8090:8080"
     depends_on:
-      tordb:
+      postgres:
         condition: service_healthy # Ждет, пока база будет реально готова
     environment:
       EMAIL_PASS: ${EMAIL_PASS}
@@ -46,7 +42,7 @@ services:
       POSTGRES_PASS: ${POSTGRES_PASS}
       PGADMIN_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_PASS: ${PGADMIN_PASS}
-      PG_HOST: tordb
+      PG_HOST: postgres
       PG_PORT: 5432
       TARGET_EMAIL: ${TARGET_EMAIL}
 

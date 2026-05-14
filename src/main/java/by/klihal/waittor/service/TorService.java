@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -28,16 +29,22 @@ public class TorService {
                 .map(torMapper::toDto);
     }
 
+    @Transactional(readOnly = true)
+    public Flux<TorDto> findAllActual() {
+        return repository.findAllByReleaseBeforeOrReleaseIsNull(LocalDate.now())
+                .map(torMapper::toDto);
+    }
+
     @Transactional
     public Mono<Void> plusSeries(Long id) {
-        repository.findById(id)
+        return repository.findById(id)
                 .flatMap(tor -> {
                     tor.setSeries(Optional.ofNullable(tor.getSeries())
                             .map(s -> s + 1)
                             .orElse(1));
                     return repository.save(tor);
-                });
-        return Mono.empty();
+                })
+                .then();
     }
 
     @Transactional

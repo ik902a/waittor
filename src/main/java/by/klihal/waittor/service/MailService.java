@@ -1,6 +1,6 @@
 package by.klihal.waittor.service;
 
-import by.klihal.waittor.model.Movie;
+import by.klihal.waittor.dto.Movie;
 import com.google.common.collect.Multimap;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

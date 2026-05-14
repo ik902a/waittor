@@ -1,6 +1,7 @@
 package by.klihal.waittor.controller;
 
 import by.klihal.waittor.dto.TorDto;
+import by.klihal.waittor.service.DataService;
 import by.klihal.waittor.service.TorService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,9 +16,11 @@ import reactor.core.publisher.Mono;
 public class TorController {
 
     private final TorService torService;
+    private final DataService dataService;
 
-    public TorController(TorService torService) {
+    public TorController(TorService torService, DataService dataService) {
         this.torService = torService;
+        this.dataService = dataService;
     }
 
     @GetMapping
@@ -35,6 +38,13 @@ public class TorController {
 
         model.addAttribute("tors", torService.findAll());
         return Mono.just("index :: tor-table");
+    }
+
+    @GetMapping("/check")
+    @ResponseBody
+    public Mono<String> checkTorrents(Model model) {
+        dataService.begin();
+        return Mono.just("");
     }
 
     @DeleteMapping("/delete/{id}")

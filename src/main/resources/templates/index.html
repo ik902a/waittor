@@ -47,8 +47,10 @@
     </div>
 </div>
 
-<!--<button th:if="${#authorization.expression('hasRole(''ADMIN'')')}" class="btn" onclick="openAddForm()">+ Добавить</button>-->
-<button class="btn" onclick="openAddForm()">+ Добавить</button>
+<div style="display: flex; gap: 8px;">
+    <button class="btn" id="checkBtn" type="button">Проверить</button>
+    <button class="btn" onclick="openAddForm()">+ Добавить</button>
+</div>
 
 <div id="form-container" style="display:none; margin-top: 20px;" class="form-card">
     <form th:fragment="torDto"
@@ -106,6 +108,19 @@
     function closeForm() {
         document.getElementById('form-container').style.display = 'none';
     }
+
+    document.getElementById('form-date').valueAsDate = new Date();
+
+    document.getElementById('checkBtn').addEventListener('click', function() {
+    // Отправка фонового GET-запроса
+    fetch('/tors/check')
+        .then(response => {
+            if (response.ok) {
+                console.log('Запрос успешно отправлен');
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+});
 </script>
 
 </body>
