@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <meta charset="UTF-8">
+    <title>Фильмы</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}">
+</head>
+<body>
+
+<h2>Список фильмов</h2>
+
+<div id="tor-table-container">
+    <div id="tor-list-inner" class="tor-list" th:fragment="tor-table">
+        <!-- Заголовки -->
+        <div class="tor-row header">
+            <div>Название</div>
+            <div>Дата Релиза</div>
+            <div>Тип фильма</div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <div class="tor-row" th:each="tor : ${tors}">
+            <div class="edit-name" th:text="${tor.name}" th:data-id="${tor.id}" style="font-weight: 500;">Название</div>
+            <div class="edit-date" th:text="${#temporals.format(tor.release, 'dd.MM.yyyy')}" style="color: #64748b;">
+                Дата
+            </div>
+            <div class="edit-type"
+                 th:data-type-val="${tor.torrentType}"
+                 th:text="${tor.torrentType.name}"
+                 style="background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 12px; font-size: 0.85em;">
+                Тип
+            </div>
+            <!-- Кнопка Исправить -->
+            <button class="btn-edit" onclick="editUser(this)">✎</button>
+            <!-- Кнопка удаления -->
+            <button class="btn-del"
+                    th:attr="hx-delete='/tors/delete/' + ${tor.id}"
+                    hx-target="closest .tor-row"
+                    hx-swap="outerHTML swap:300ms"
+                    hx-confirm="Вы уверены?">
+                ×
+            </button>
+        </div>
+    </div>
+</div>
+
+<div style="display: flex; gap: 8px;">
+    <button class="btn" id="checkBtn" type="button">Проверить</button>
+    <button class="btn" onclick="openAddForm()">+ Добавить</button>
+</div>
+
+<div id="form-container" style="display:none; margin-top: 20px;" class="form-card">
+    <form th:fragment="torDto"
+          id="tor-form"
+          hx-post="/tors/add"
+          hx-target="#tor-list-inner"
+          hx-swap="innerHTML"
+          onsubmit="closeForm()">
+
+        <input type="hidden" name="id" id="form-id">
+        <input type="text" name="name" id="form-name" placeholder="Название" required>
+        <input type="date" id="form-date" name="release">
+        <select name="torrentType" id="form-type">
+            <option th:each="type : ${T(by.klihal.waittor.common.enums.TorrentType).values()}"
+                    th:value="${type}" th:text="${type.name}"></option>
+        </select>
+
+
+        <div style="display: flex; gap: 8px;">
+            <button type="submit" class="btn">Сохранить</button>
+            <button type="button" class="btn" style="background: #94a3b8;"
+                    onclick="closeForm()">Отмена
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function editUser(btn) {
+        const row = btn.closest('.tor-row');
+
+        // Извлекаем данные из строки
+        const id = row.querySelector('.edit-name').getAttribute('data-id');
+        const name = row.querySelector('.edit-name').innerText;
+        const date = row.querySelector('.edit-date').innerText;
+        const type = row.querySelector('.edit-type').getAttribute('data-type-val');
+
+        // Заполняем форму
+        document.getElementById('form-id').value = id;
+        document.getElementById('form-name').value = name;
+        document.getElementById('form-date').value = date;
+        document.getElementById('form-type').value = type;
+
+<!--        document.getElementById('form-title').innerText = "Редактировать";-->
+        document.getElementById('form-container').style.display = 'block';
+    }
+
+    function openAddForm() {
+        document.getElementById('tor-form').reset();
+        document.getElementById('form-id').value = '';
+<!--        document.getElementById('form-title').innerText = "Добавить пользователя";-->
+        document.getElementById('form-container').style.display = 'block';
+    }
+
+    function closeForm() {
+        document.getElementById('form-container').style.display = 'none';
+    }
+
+    document.getElementById('form-date').valueAsDate = new Date();
+
+    document.getElementById('checkBtn').addEventListener('click', function() {
+    // Отправка фонового GET-запроса
+    fetch('/tors/check')
+        .then(response => {
+            if (response.ok) {
+                console.log('Запрос успешно отправлен');
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+});
+</script>
+
+</body>
+</html>

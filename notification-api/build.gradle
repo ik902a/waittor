@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':common-dto')
+
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'//TODO deprecated in future
+}

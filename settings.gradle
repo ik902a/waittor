@@ -1,1 +1,4 @@
 rootProject.name = 'waittor'
+include 'data-api'
+include 'notification-api'
+include 'common-dto'

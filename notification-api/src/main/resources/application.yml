@@ -1,0 +1,19 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: notification-api
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: "mcar7service@gmail.com"
+      password: ${EMAIL_PASS}
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+  tor:
+    email:
+      target: ${TARGET_EMAIL}

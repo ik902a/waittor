@@ -1,0 +1,16 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: data-api
+  r2dbc:
+    url: r2dbc:postgresql://${PG_HOST}:${PG_PORT}/tor_db?sslMode=DISABLE
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASS}
+tor:
+  url:
+    login: "https://rutracker.org/forum/login.php"
+    search: "https://rutracker.org/forum/tracker.php?f=%s&nm=%s"
+  authenticate:
+    login: ${TOR_LOGIN}
+    password: ${TOR_PASS}
