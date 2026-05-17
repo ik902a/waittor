@@ -43,6 +43,7 @@ subprojects {
             dependency 'io.jsonwebtoken:jjwt-api:0.13.0'
             dependency 'io.jsonwebtoken:jjwt-impl:0.13.0'
             dependency 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+            dependency 'com.fasterxml.jackson.core:jackson-databind:2.21.2'
 //
             dependency 'org.junit.platform:junit-platform-launcher:6.0.3'
         }
@@ -50,6 +51,7 @@ subprojects {
     dependencies {
         //spring
         implementation 'org.springframework.boot:spring-boot-starter-validation'
+        implementation 'org.springframework.boot:spring-boot-starter-kafka'
 
         implementation 'com.google.guava:guava'
 

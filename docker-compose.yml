@@ -17,6 +17,31 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  kafka:
+    image: apache/kafka:4.2.0
+    container_name: kafka_container
+    ports:
+      - "9092:9092"
+    environment:
+      # Настройки узла в режиме KRaft (совмещенная роль брокера и контроллера)
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:9093'
+      # Слушатели: один внутренний для KRaft, второй внешний для ваших Java-приложений
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      # Автоматическая генерация ID кластера при старте контейнера
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      # Оптимизация для локальной разработки (один реплик-фактор)
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
   app:
     build: .
     container_name: waittor

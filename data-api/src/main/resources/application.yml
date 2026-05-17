@@ -7,6 +7,11 @@ spring:
     url: r2dbc:postgresql://${PG_HOST}:${PG_PORT}/tor_db?sslMode=DISABLE
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASS}
+  kafka:
+    bootstrap-servers: localhost:9092 # ????? ????? Kafka
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 tor:
   url:
     login: "https://rutracker.org/forum/login.php"

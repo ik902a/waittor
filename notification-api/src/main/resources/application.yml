@@ -1,19 +1,31 @@
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
     name: notification-api
-    mail:
-      host: smtp.gmail.com
-      port: 587
-      username: "mcar7service@gmail.com"
-      password: ${EMAIL_PASS}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "mcar7service@gmail.com"
+    password: ${EMAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: movies-group # ?????????? ??? ?????? ????????????
+      auto-offset-reset: earliest # ? ?????? ??????? ?????? ???? (earliest/latest)
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        mail:
-          smtp:
-            auth: true
-            starttls:
-              enable: true
-  tor:
-    email:
-      target: ${TARGET_EMAIL}
+        spring.json.trusted.packages: "*" # ????????? ?????????????? ????? DTO-???????
+  threads:
+    virtual:
+      enabled: true
+tor:
+  email:
+    target: ${TARGET_EMAIL}

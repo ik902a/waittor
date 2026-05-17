@@ -22,10 +22,12 @@ public class DataService {
 
     private final TorService torService;
     private final TrackerConnectionService trackerConnectionService;
+    private final MailService mailService;
 
-    public DataService(TorService torService, TrackerConnectionService trackerConnectionService) {
+    public DataService(TorService torService, TrackerConnectionService trackerConnectionService, MailService mailService) {
         this.torService = torService;
         this.trackerConnectionService = trackerConnectionService;
+        this.mailService = mailService;
     }
 
     public Disposable begin() {
@@ -47,9 +49,8 @@ public class DataService {
 
         Map<String, String> cookieCache = trackerConnectionService.authenticate();
         Multimap<String, Movie> tables = collectMovieTables(torrents, cookieCache);
-        if (!tables.isEmpty()) {
-            //TODO sendLetter
-        }
+
+        mailService.sendLetter(tables);
     }
 
     private Multimap<String, Movie> collectMovieTables(List<TorDto> movie, Map<String, String> cookieCache) {
