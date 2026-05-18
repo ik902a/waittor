@@ -28,10 +28,15 @@ services:
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:9093'
       # Слушатели: один внутренний для KRaft, второй внешний для ваших Java-приложений
-      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092'
+      # 1. Задаем разные имена для портов: 9092 для хоста, 9094 для Java-приложения, 9093 для KRaft
+      KAFKA_LISTENERS: 'EXTERNAL://0.0.0.0:9092,CLIENT://0.0.0.0:9094,CONTROLLER://0.0.0.0:9093'
+      # 2. Теперь у каждого имени ровно один уникальный адрес:
+      KAFKA_ADVERTISED_LISTENERS: 'EXTERNAL://localhost:9092,CLIENT://kafka:9094'
+      # 3. Маппим новые имена на стандартный протокол PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'EXTERNAL:PLAINTEXT,CLIENT:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      # 4. Указываем, какой листенер брокеры используют для связи между собой
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'CLIENT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
       # Автоматическая генерация ID кластера при старте контейнера
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
       # Оптимизация для локальной разработки (один реплик-фактор)
@@ -40,24 +45,46 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
-  app:
-    build: .
-    container_name: waittor
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server localhost:9094 || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+  data-api:
+    build:
+      context: .
+      dockerfile: ./data-api/Dockerfile
+    container_name: data-api
     ports:
-      - "8090:8080"
+      - "8091:8080"
     depends_on:
       postgres:
         condition: service_healthy # Ждет, пока база будет реально готова
+      kafka:
+        condition: service_healthy
     environment:
-      EMAIL_PASS: ${EMAIL_PASS}
       TOR_LOGIN: ${TOR_LOGIN}
       TOR_PASS: ${TOR_PASS}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASS: ${POSTGRES_PASS}
       PG_HOST: postgres
       PG_PORT: 5432
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9094
+  notification-api:
+    build:
+      context: .
+      dockerfile: ./notification-api/Dockerfile
+    container_name: notification-api
+    ports:
+      - "8092:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      EMAIL_PASS: ${EMAIL_PASS}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9094
       TARGET_EMAIL: ${TARGET_EMAIL}
 
 volumes:
