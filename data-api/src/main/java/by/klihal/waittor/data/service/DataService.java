@@ -48,9 +48,9 @@ public class DataService {
         torrents.forEach(m -> System.out.println("-" + m.name()));
 
         Map<String, String> cookieCache = trackerConnectionService.authenticate();
-        Multimap<String, Movie> tables = collectMovieTables(torrents, cookieCache);
+        Multimap<String, Movie> multiMovies = collectMovieTables(torrents, cookieCache);
 
-        mailService.sendLetter(tables);
+        mailService.sendLetter(multiMovies);
     }
 
     private Multimap<String, Movie> collectMovieTables(List<TorDto> movie, Map<String, String> cookieCache) {

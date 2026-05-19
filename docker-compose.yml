@@ -52,6 +52,20 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+  ollama_qwen:
+    image: ollama/ollama
+    container_name: ollama_container
+    ports:
+      - "11481:11434"
+    volumes:
+      - ollama_qwen_data:/root/.ollama
+    entrypoint: >
+      /bin/sh -c "
+        ollama serve &
+        sleep 2 &&
+        ollama pull qwen2.5-coder:1.5b &&
+        wait
+      "
   data-api:
     build:
       context: .
@@ -89,3 +103,4 @@ services:
 
 volumes:
   postgres_data:
+  ollama_qwen_data:

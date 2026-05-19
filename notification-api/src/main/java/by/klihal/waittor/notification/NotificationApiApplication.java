@@ -8,6 +8,6 @@ public class NotificationApiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NotificationApiApplication.class, args);
+        System.out.println("[notification-api] application started");
     }
-
 }

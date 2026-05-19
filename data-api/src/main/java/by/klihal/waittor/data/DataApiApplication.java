@@ -10,6 +10,6 @@ public class DataApiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DataApiApplication.class, args);
+        System.out.println("[data-api] application started");
     }
-
 }
