@@ -1,5 +1,31 @@
-dependencies {
+plugins {
+    id 'com.google.protobuf' version '0.9.4'
+    id 'java-library'
+}
 
+dependencies {
+    implementation 'io.github.lognet:grpc-spring-boot-starter'
+
+    compileOnly 'javax.annotation:javax.annotation-api'
+    annotationProcessor 'javax.annotation:javax.annotation-api'
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.3"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.62.2"
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                grpc {}
+            }
+        }
+    }
 }
 
 // Отключаем поиск main-класса и сборку bootJar для этой библиотеки

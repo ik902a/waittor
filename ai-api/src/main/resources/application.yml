@@ -3,8 +3,14 @@ server:
 spring:
   application:
     name: ai-api
+  main:
+    web-application-type: none
   ai:
     ollama:
-      base-url: http://localhost:11481
+      base-url: http://${OLLAMA_QWEN_HOST:localhost}:11481
       chat:
         model: qwen2.5-coder:1.5b
+grpc:
+  port: 19090
+  server:
+    start: false

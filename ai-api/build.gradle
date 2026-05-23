@@ -2,4 +2,6 @@ dependencies {
     implementation project(':common-dto')
 
     implementation "org.springframework.ai:spring-ai-starter-model-ollama"
+
+    implementation 'io.github.lognet:grpc-spring-boot-starter'
 }

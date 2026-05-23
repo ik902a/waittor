@@ -16,8 +16,8 @@ public class MailConsumer {
     }
 
     @KafkaListener(topics = "movies-topic", groupId = "movies-group")
-    public void consumeMovies(Multimap<String, Movie> tables) {
-        System.out.println("Получено новое событие фильмов: " + tables.keySet());
-        mailService.sendLetter(tables);
+    public void consumeMovies(String email) {
+        System.out.println("Получено новое событие");
+        mailService.sendLetter(email);
     }
 }

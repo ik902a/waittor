@@ -11,7 +11,7 @@ spring:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092} # ????? ????? Kafka
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 tor:
   url:
     login: "https://rutracker.org/forum/login.php"
@@ -19,3 +19,8 @@ tor:
   authenticate:
     login: ${TOR_LOGIN}
     password: ${TOR_PASS}
+#grpc:
+#  client:
+#    movie-service: # имя канала, используется в коде
+#      address: 'static://localhost:19090'
+#      negotiation-type: plaintext # отключает TLS для локальной разработки

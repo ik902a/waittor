@@ -52,7 +52,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-  ollama_qwen:
+  ollama_qwen: #TODO need time for loading. Don't have healthcheck
     image: ollama/ollama
     container_name: ollama_container
     ports:
@@ -93,13 +93,22 @@ services:
     container_name: notification-api
     ports:
       - "8092:8080"
-    depends_on:
-      kafka:
-        condition: service_healthy
     environment:
       EMAIL_PASS: ${EMAIL_PASS}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9094
       TARGET_EMAIL: ${TARGET_EMAIL}
+  ai-api:
+    build:
+      context: .
+      dockerfile: ./ai-api/Dockerfile
+    container_name: ai-api
+    ports:
+      - "8093:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      OLLAMA_QWEN_HOST: ollama_qwen
 
 volumes:
   postgres_data:

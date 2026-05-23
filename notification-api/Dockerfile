@@ -6,6 +6,7 @@ COPY settings.gradle build.gradle gradlew ./
 COPY gradle gradle
 COPY notification-api/build.gradle notification-api/
 COPY data-api/build.gradle data-api/
+COPY ai-api/build.gradle ai-api/
 COPY common-dto/build.gradle common-dto/
 
 #RUN mkdir -p data-api notification-api

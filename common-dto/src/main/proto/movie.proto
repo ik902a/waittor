@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.grpc";
+
+message MovieRequest {
+  string name = 1;
+  repeated MovieGrpc movies = 2;
+}
+
+message MovieGrpc {
+  string title = 1;
+  string size = 2;
+  string link = 3;
+}
+
+message EmailResponse {
+  string email = 1;
+}
+
+// Обертка для списка
+message BatchMovieRequest {
+  repeated MovieRequest movies = 1;
+}
+
+service MovieService {
+  rpc GetMovieEmail (BatchMovieRequest) returns (EmailResponse);
+}

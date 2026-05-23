@@ -1,2 +1,15 @@
 # TestApp
-Nothing special. I'm just practicing the technologies I need.
+Service for practice
+
+Used tools:
+- Spring Boot
+- Gradle
+- Docker
+- WebFLux
+- Thymeleaf
+- PostgreSQL
+- R2DBC
+- Kafka
+- gRPC
+- Ollama
+- Spring Security
