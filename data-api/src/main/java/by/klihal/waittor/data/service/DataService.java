@@ -62,6 +62,9 @@ public class DataService {
             }
 
             Document documnent = trackerConnectionService.search(torrent, cookieCache);
+            if (documnent == null) {
+                break;
+            }
             // 4. Парсим результаты (id таблицы "tor-tbl")
             Elements rows = documnent.select("#tor-tbl tr.tCenter");
             if (rows.hasText()) {

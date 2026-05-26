@@ -14,6 +14,9 @@ dependencies {
 
     //database
     implementation 'org.postgresql:r2dbc-postgresql'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.flywaydb:flyway-core'
+    implementation "org.flywaydb:flyway-database-postgresql"
 
     implementation 'org.mapstruct:mapstruct'
     annotationProcessor "org.mapstruct:mapstruct-processor"

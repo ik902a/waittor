@@ -26,7 +26,8 @@ public class MailService {
     public void sendLetter(Multimap<String, Movie> tables) {
         if (!tables.isEmpty()) {
             List<GroupedMovie> movies = mapMultimapToGroupedList(tables);
-            String email = movieService.getUserName(movies);
+            System.out.println("Send into email generator");
+            String email = movieService.getMovieEmail(movies);
 
             System.out.println("Send email into KAFKA");
             mailProducer.sendMovies(email);

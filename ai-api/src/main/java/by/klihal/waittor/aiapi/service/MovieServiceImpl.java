@@ -1,7 +1,6 @@
 package by.klihal.waittor.aiapi.service;
 
 import by.klihal.waittor.common.dto.GroupedMovie;
-import by.klihal.waittor.common.dto.Movie;
 import com.example.grpc.*;
 import io.grpc.stub.StreamObserver;
 import org.lognet.springboot.grpc.GRpcService;
@@ -18,12 +17,11 @@ public class MovieServiceImpl extends MovieServiceGrpc.MovieServiceImplBase {
     }
 
     @Override
-    public void getMovieEmail(BatchMovieRequest request, StreamObserver<EmailResponse> responseObserver) {
-
+    public void getMovieEmail(BatchMovieGrpcRequest request, StreamObserver<EmailResponse> responseObserver) {
         List<GroupedMovie> groupedMovies = grpcBatchMovieRequestToDto(request.getMoviesList());
 
         String email = emailGeneratorService.generateHtmlEmail(groupedMovies);
-
+        System.out.println("Email:\n" + email);
         EmailResponse response = EmailResponse.newBuilder()
                 .setEmail(email)
                 .build();
@@ -32,15 +30,9 @@ public class MovieServiceImpl extends MovieServiceGrpc.MovieServiceImplBase {
         responseObserver.onCompleted();
     }
 
-    private List<GroupedMovie> grpcBatchMovieRequestToDto(List<MovieRequest> request) {
-        return request.stream()
-                .map(mr -> new GroupedMovie(mr.getName(), grpcMovieRequestToDto(mr.getMoviesList())))
-                .toList();
-    }
-
-    private List<Movie> grpcMovieRequestToDto(List<MovieGrpc> moviesList) {
-        return moviesList.stream()
-                .map(m -> new Movie(m.getTitle(), m.getSize(), m.getLink()))
+    private List<GroupedMovie> grpcBatchMovieRequestToDto(List<MovieGrpcRequest> movieGrpcRequests) {
+        return movieGrpcRequests.stream()
+                .map(GroupedMovie::new)
                 .toList();
     }
 }

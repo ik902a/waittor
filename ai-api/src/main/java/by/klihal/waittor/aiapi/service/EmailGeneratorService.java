@@ -38,7 +38,7 @@ public class EmailGeneratorService {
         }
 
         String userText = USER_PROMPT_TEMPLATE + jsonContext;
-
+        System.out.println("PROMPT-" + userText);
         return chatHtmlClient
                 .prompt()
                 .user(userText)

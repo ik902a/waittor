@@ -16,26 +16,26 @@ public class MovieService {
         this.serviceStub = serviceStub;
     }
 
-    public String getUserName(List<GroupedMovie> groupedMovies) {
-        List<MovieRequest> movieRequests = dtoToGrpcRequest(groupedMovies);
+    public String getMovieEmail(List<GroupedMovie> groupedMovies) {
+        List<MovieGrpcRequest> movieRequests = dtoToMovieGrpcRequest(groupedMovies);
 
-        BatchMovieRequest request = BatchMovieRequest.newBuilder()
+        BatchMovieGrpcRequest request = BatchMovieGrpcRequest.newBuilder()
                 .addAllMovies(movieRequests)
                 .build();
         EmailResponse response = serviceStub.getMovieEmail(request);
         return response.getEmail();
     }
 
-    private List<MovieRequest> dtoToGrpcRequest(List<GroupedMovie> groupedMovies) {
+    private List<MovieGrpcRequest> dtoToMovieGrpcRequest(List<GroupedMovie> groupedMovies) {
         return groupedMovies.stream()
-                .map(gm -> MovieRequest.newBuilder()
+                .map(gm -> MovieGrpcRequest.newBuilder()
                         .setName(gm.name())
-                        .addAllMovies(moviesToMoviesRequest(gm.movies()))
+                        .addAllMovies(moviesToMoviesGrpc(gm.movies()))
                         .build())
                 .toList();
     }
 
-    private Iterable<MovieGrpc> moviesToMoviesRequest(List<Movie> movies) {
+    private Iterable<MovieGrpc> moviesToMoviesGrpc(List<Movie> movies) {
         return movies.stream()
                 .map(m -> MovieGrpc.newBuilder()
                         .setTitle(m.title())

@@ -48,7 +48,8 @@ public class TrackerConnectionService {
             System.out.println("[" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "] " + torrent.name() + " - " + response.statusCode());
             return response.parse();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("Ошибка при выполнении операции поиска фильма[{}]: {}", torrent.name(), e.getMessage(), e);
+            return null;
         }
     }
 
@@ -77,7 +78,7 @@ public class TrackerConnectionService {
 
             return cookies;
         } catch (Exception e) {
-            log.error("Ошибка при выполнении операции: {}", e.getMessage(), e);
+            log.error("Ошибка при выполнении операции получения кук: {}", e.getMessage(), e);
         }
         return Map.of();
     }
