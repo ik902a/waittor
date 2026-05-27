@@ -1,4 +1,10 @@
 package by.klihal.waittor.common.dto;
 
-public record UserDto(String username, String password) {
+import by.klihal.waittor.common.enums.UserRole;
+
+public record UserDto(Long id,
+                      String login,
+                      String password,
+                      String email,
+                      UserRole role) {
 }

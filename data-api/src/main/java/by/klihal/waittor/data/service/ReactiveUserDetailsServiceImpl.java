@@ -19,7 +19,7 @@ public class ReactiveUserDetailsServiceImpl implements ReactiveUserDetailsServic
     public Mono<UserDetails> findByUsername(@NonNull String username) {
         return userRepository.findByUsername(username)
                 .map(user -> User.builder()
-                        .username(user.getUsername())
+                        .username(user.getLogin())
                         .password(user.getPassword())
                         .roles("ADMIN")
                         .build()
