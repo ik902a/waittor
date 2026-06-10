@@ -27,6 +27,10 @@ tor:
   authenticate:
     login: ${TOR_LOGIN}
     password: ${TOR_PASS}
+application:
+  security:
+    cookie:
+      secure: false # На проде будет true
 #grpc:
 #  client:
 #    movie-service: # имя канала, используется в коде

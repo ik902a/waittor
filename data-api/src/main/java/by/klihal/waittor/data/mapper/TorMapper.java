@@ -1,5 +1,6 @@
 package by.klihal.waittor.data.mapper;
 
+import by.klihal.waittor.common.dto.CreatedTorDto;
 import by.klihal.waittor.common.dto.TorDto;
 import by.klihal.waittor.data.model.Torrent;
 
@@ -12,13 +13,13 @@ import org.mapstruct.Named;
 public interface TorMapper {
 
     @Mapping(source = "torDto", target = "torrentType", qualifiedByName = "fromTorrentEnum")
-    Torrent toEntity(TorDto torDto);
+    Torrent toEntity(CreatedTorDto torDto);
 
     @Mapping(source = "torrent", target = "torrentType", qualifiedByName = "toTorrentEnum")
     TorDto toDto(Torrent torrent);
 
     @Named("fromTorrentEnum")
-    default String fromTorrentEnum(TorDto dto) {
+    default String fromTorrentEnum(CreatedTorDto dto) {
         return dto.torrentType().toString();
     }
 

@@ -17,7 +17,7 @@ public class ReactiveUserDetailsServiceImpl implements ReactiveUserDetailsServic
 
     @Override
     public Mono<UserDetails> findByUsername(@NonNull String username) {
-        return userRepository.findByUsername(username)
+        return userRepository.findByLogin(username)
                 .map(user -> User.builder()
                         .username(user.getLogin())
                         .password(user.getPassword())

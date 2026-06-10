@@ -1,5 +1,6 @@
 package by.klihal.waittor.data.service;
 
+import by.klihal.waittor.common.dto.CreatedTorDto;
 import by.klihal.waittor.common.dto.TorDto;
 import by.klihal.waittor.data.mapper.TorMapper;
 import by.klihal.waittor.data.model.Torrent;
@@ -48,7 +49,7 @@ public class TorService {
     }
 
     @Transactional
-    public Mono<TorDto> save(TorDto tor) {
+    public Mono<TorDto> save(CreatedTorDto tor) {
         return repository.save(
                         torMapper.toEntity(tor)
                 ).map(torMapper::toDto);

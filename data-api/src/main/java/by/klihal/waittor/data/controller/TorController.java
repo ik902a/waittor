@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Controller
-@RequestMapping("/tors")
+//@Controller
+//@RequestMapping("/tors")
 public class TorController {
 
     private final TorService torService;
@@ -30,15 +30,15 @@ public class TorController {
         return Mono.just("index");
     }
 
-    @PostMapping("/add")
-    @PreAuthorize("hasRole('ADMIN')")
-    public Mono<String> addTor(@Valid @ModelAttribute("torDto") TorDto tor,
-                               Model model) {
-        torService.save(tor).subscribe();
-
-        model.addAttribute("tors", torService.findAll());
-        return Mono.just("index :: tor-table");
-    }
+//    @PostMapping("/add")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public Mono<String> addTor(@Valid @ModelAttribute("torDto") TorDto tor,
+//                               Model model) {
+//        torService.save(tor).subscribe();
+//
+//        model.addAttribute("tors", torService.findAll());
+//        return Mono.just("index :: tor-table");
+//    }
 
     @GetMapping("/check")
     @ResponseBody

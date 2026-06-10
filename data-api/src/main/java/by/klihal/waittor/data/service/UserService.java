@@ -51,4 +51,10 @@ public class UserService {
     public Mono<Void> delete(Long id) {
         return repository.deleteById(id);
     }
+
+    @Transactional
+    public Mono<UserDto> findById(Long id) {
+        return repository.findById(id)
+                .map(mapper::toDto);
+    }
 }
