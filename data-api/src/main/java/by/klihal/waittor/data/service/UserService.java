@@ -57,4 +57,8 @@ public class UserService {
         return repository.findById(id)
                 .map(mapper::toDto);
     }
+
+    public Mono<Boolean> existsByLogin(String login) {
+        return repository.existsByLogin(login);
+    }
 }

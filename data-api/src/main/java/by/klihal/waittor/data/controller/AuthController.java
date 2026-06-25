@@ -2,7 +2,10 @@ package by.klihal.waittor.data.controller;
 
 import by.klihal.waittor.common.dto.AuthenticationRequest;
 import by.klihal.waittor.common.dto.AuthenticationResponse;
+import by.klihal.waittor.common.dto.CreateUserDto;
 import by.klihal.waittor.data.service.AuthService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
@@ -32,5 +35,11 @@ public class AuthController {
     @PostMapping("/logout")
     public Mono<ResponseEntity<Void>> logout(ServerWebExchange exchange) {
         return service.logout(exchange);
+    }
+
+    @PostMapping("/register")
+    public Mono<ResponseEntity<Void>> register(@Valid @RequestBody CreateUserDto userDto) {
+        return service.register(userDto)
+                .map(user -> ResponseEntity.status(HttpStatus.CREATED).build());
     }
 }

@@ -2,6 +2,9 @@ package by.klihal.waittor.data.service;
 
 import by.klihal.waittor.common.dto.AuthenticationRequest;
 import by.klihal.waittor.common.dto.AuthenticationResponse;
+import by.klihal.waittor.common.dto.CreateUserDto;
+import by.klihal.waittor.common.dto.UserDto;
+import by.klihal.waittor.data.exception.UserAlreadyExistsException;
 import by.klihal.waittor.data.model.RefreshToken;
 import by.klihal.waittor.data.security.JwtUtils;
 import by.klihal.waittor.data.security.RefreshTokenService;
@@ -136,5 +139,16 @@ public class AuthService {
 
                     return ResponseEntity.ok().build();
                 }));
+    }
+
+    public Mono<UserDto> register(CreateUserDto userDto) {
+        return userService.existsByLogin(userDto.login())
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.error(new UserAlreadyExistsException("Логин уже занят"));
+                    }
+                    return userService.save(userDto);
+                });
+
     }
 }
