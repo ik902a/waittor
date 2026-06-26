@@ -49,17 +49,20 @@ public class TorService {
     }
 
     @Transactional
-    public Mono<TorDto> save(CreatedTorDto tor) {
+    public Mono<TorDto> save(CreatedTorDto dto) {
         return repository.save(
-                        torMapper.toEntity(tor)
+                        torMapper.toEntity(dto)
                 ).map(torMapper::toDto);
     }
 
-    public Mono<TorDto> update(Long id, TorDto userDto) {
+    @Transactional
+    public Mono<TorDto> update(Long id, CreatedTorDto dto) {
         return repository.findById(id)
-                .flatMap(existingUser -> {
-                    Torrent updatedEntity = new Torrent();
-                    return repository.save(updatedEntity);
+                .flatMap(entity -> {
+                    entity.setName(dto.name());
+                    entity.setRelease(dto.release());
+                    entity.setTorrentType(dto.torrentType().name());
+                    return repository.save(entity);
                 })
                 .map(torMapper::toDto);
     }

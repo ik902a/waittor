@@ -123,7 +123,8 @@ public class AuthService {
     }
 
     public Mono<ResponseEntity<Void>> logout(ServerWebExchange exchange) {
-        String refreshToken = getRefreshToken(exchange);
+        String refreshToken = getRefreshToken(exchange);//todo refreshe is empty allways
+        addRefreshCookie("", exchange, Duration.ZERO);
         if (refreshToken == null) {
             return Mono.just(ResponseEntity.ok().build());
         }
@@ -134,11 +135,7 @@ public class AuthService {
                     System.err.println("Ошибка удаления токена из БД при logout: " + e.getMessage());
                     return Mono.empty();
                 })
-                .then(Mono.fromSupplier(() -> {
-                    addRefreshCookie("", exchange, Duration.ZERO);
-
-                    return ResponseEntity.ok().build();
-                }));
+                .then(Mono.fromSupplier(() -> ResponseEntity.ok().build()));
     }
 
     public Mono<UserDto> register(CreateUserDto userDto) {

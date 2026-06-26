@@ -2,17 +2,14 @@ package by.klihal.waittor.data.handler;
 
 import by.klihal.waittor.common.dto.CreatedTorDto;
 import by.klihal.waittor.common.dto.TorDto;
-import by.klihal.waittor.common.enums.TorrentType;
 import by.klihal.waittor.data.service.DataService;
 import by.klihal.waittor.data.service.TorService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-
-import java.time.LocalDate;
-import java.util.Map;
 
 @Component
 public class TorHandler {
@@ -25,38 +22,37 @@ public class TorHandler {
         this.dataService = dataService;
     }
 
-    // GET /tors
     public Mono<ServerResponse> showPage(ServerRequest request) {
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(torService.findAll(), TorDto.class);
     }
 
-    // POST /tors/add
     // Примечание: @Valid и @ModelAttribute в функциональном стиле обрабатываются вручную.
     // Ниже показан пример извлечения данных формы. Для полноценной валидации Spring Validator вызывается вручную.
-    public Mono<ServerResponse> addTor(ServerRequest request) {
+    public Mono<ServerResponse> save(ServerRequest request) {
         return request.bodyToMono(CreatedTorDto.class)
-                .flatMap(tor -> {
-                    return torService.save(tor);
-                })
-                .flatMap(savedTor -> ServerResponse.ok()
-                        .contentType(MediaType.TEXT_HTML)
-                        // Возвращаем только фрагмент таймлифа
-                        .render("index :: tor-table", Map.of("tors", torService.findAll())));
+                .flatMap(torService::save)
+                .flatMap(savedTor -> ServerResponse.status(HttpStatus.CREATED).build());
     }
 
-    // GET /tors/check
+    public Mono<ServerResponse> update(ServerRequest request) {
+        Long id = Long.valueOf(request.pathVariable("id"));
+
+        return request.bodyToMono(CreatedTorDto.class)
+                .flatMap(dto -> torService.update(id, dto))
+                .flatMap(updatedTor -> ServerResponse.status(HttpStatus.OK).build());
+    }
+
     public Mono<ServerResponse> checkTorrents(ServerRequest request) {
         return Mono.fromRunnable(dataService::begin)
-                .then(ServerResponse.ok().bodyValue(""));
+                .then(ServerResponse.status(HttpStatus.NO_CONTENT).build());
     }
 
-    // DELETE /tors/delete/{id}
-    public Mono<ServerResponse> deleteTor(ServerRequest request) {
+    public Mono<ServerResponse> delete(ServerRequest request) {
         Long id = Long.valueOf(request.pathVariable("id"));
 
         return torService.delete(id)
-                .then(ServerResponse.ok().bodyValue(""));
+                .then(ServerResponse.status(HttpStatus.NO_CONTENT).build());
     }
 }

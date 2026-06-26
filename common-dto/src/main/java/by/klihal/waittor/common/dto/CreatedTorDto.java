@@ -6,11 +6,10 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public record CreatedTorDto (
-                             @NotBlank(message = "Имя не может быть пустым")
-                             String name,
-                             @NotNull(message = "Необходимо сделать выбор")
-                             TorrentType torrentType,
-                             LocalDate release,
-                             Integer series) {
+public record CreatedTorDto(
+        @NotBlank(message = "Имя не может быть пустым")
+        String name,
+        LocalDate release,
+        @NotNull(message = "Необходимо сделать выбор")
+        TorrentType torrentType) {
 }

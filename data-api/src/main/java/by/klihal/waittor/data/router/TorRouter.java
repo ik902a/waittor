@@ -18,9 +18,10 @@ public class TorRouter {
         return route()
                 .path("/api/tors", builder -> builder
                         .GET("", accept(MediaType.APPLICATION_JSON), handler::showPage)
-                        .POST("/add", contentType(MediaType.APPLICATION_JSON), handler::addTor)
+                        .POST("", handler::save)
+                        .PUT("/{id}", handler::update)
                         .GET("/check", handler::checkTorrents)
-                        .DELETE("/delete/{id}", handler::deleteTor)
+                        .DELETE("/{id}", handler::delete)
                 )
                 .build();
     }
