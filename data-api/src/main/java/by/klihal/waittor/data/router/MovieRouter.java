@@ -1,6 +1,6 @@
 package by.klihal.waittor.data.router;
 
-import by.klihal.waittor.data.handler.TorHandler;
+import by.klihal.waittor.data.handler.MovieHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -11,12 +11,12 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class TorRouter {
+public class MovieRouter {
 
     @Bean
-    public RouterFunction<ServerResponse> torRoutes(TorHandler handler) {
+    public RouterFunction<ServerResponse> torRoutes(MovieHandler handler) {
         return route()
-                .path("/api/tors", builder -> builder
+                .path("/api/movies", builder -> builder
                         .GET("", accept(MediaType.APPLICATION_JSON), handler::showPage)
                         .POST("", handler::save)
                         .PUT("/{id}", handler::update)

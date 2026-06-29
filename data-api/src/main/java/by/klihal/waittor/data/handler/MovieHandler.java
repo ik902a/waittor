@@ -12,12 +12,12 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 @Component
-public class TorHandler {
+public class MovieHandler {
 
     private final TorService torService;
     private final DataService dataService;
 
-    public TorHandler(TorService torService, DataService dataService) {
+    public MovieHandler(TorService torService, DataService dataService) {
         this.torService = torService;
         this.dataService = dataService;
     }
