@@ -27,6 +27,9 @@ tor:
   authenticate:
     login: ${TOR_LOGIN}
     password: ${TOR_PASS}
+  grpc:
+    ai-api:
+      host: ai-api
 application:
   security:
     cookie:

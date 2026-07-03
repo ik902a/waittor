@@ -1,5 +1,5 @@
 server:
-  port: ${AIAPI_PORT:8080}
+  port: 8080
 spring:
   application:
     name: ai-api
@@ -7,7 +7,7 @@ spring:
     web-application-type: none
   ai:
     ollama:
-      base-url: http://${OLLAMA_QWEN_HOST:localhost}:11481
+      base-url: http://${OLLAMA_QWEN_HOST}:11434
       chat:
         model: qwen2.5-coder:1.5b
 grpc:

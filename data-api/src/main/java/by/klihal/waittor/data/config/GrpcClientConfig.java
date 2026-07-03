@@ -10,9 +10,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GrpcClientConfig {
 
+    @Value("${tor.grpc.ai-api.host}")
+    private String grpcHost;
+
     @Bean
     public ManagedChannel userServiceChannel() {
-        return ManagedChannelBuilder.forAddress("localhost", 19090)
+        return ManagedChannelBuilder.forAddress(grpcHost, 19090)
                 .usePlaintext() // Отключаем TLS для локальной разработки
                 .build();
     }

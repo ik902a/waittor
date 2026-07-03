@@ -52,7 +52,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-  ollama_qwen: #TODO need time for loading. Don't have healthcheck
+  ollama-qwen: #TODO need time for loading. Don't have healthcheck
     image: ollama/ollama
     container_name: ollama_container
     ports:
@@ -108,7 +108,7 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      OLLAMA_QWEN_HOST: ollama_qwen
+      OLLAMA_QWEN_HOST: ollama-qwen
 
 volumes:
   postgres_data:
