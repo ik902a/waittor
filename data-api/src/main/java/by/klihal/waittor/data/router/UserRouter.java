@@ -16,11 +16,11 @@ public class UserRouter {
     @Bean
     public RouterFunction<ServerResponse> userRoutes(UserHandler handler) {
         return route()
-                .path("/api/users", builder -> builder
-                        .GET("/api", accept(MediaType.APPLICATION_JSON), handler::findAll)
-                        .POST("/api/save" , accept(MediaType.APPLICATION_JSON), handler::save)
-                        .PUT("/api/update/{id:\\d+}", accept(MediaType.APPLICATION_JSON), handler::update)
-                        .DELETE("/api/delete/{id}", handler::delete))
+                .path("/users", builder -> builder
+                        .GET("", accept(MediaType.APPLICATION_JSON), handler::findAll)
+                        .POST("" , accept(MediaType.APPLICATION_JSON), handler::save)
+                        .PUT("/{id:\\d+}", accept(MediaType.APPLICATION_JSON), handler::update)
+                        .DELETE("/{id:\\d+}", handler::delete))
                 .build();
     }
 }

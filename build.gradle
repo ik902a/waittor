@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version "$springBootVersion" apply false
-    id 'io.spring.dependency-management' version "$springDependencyManagement" apply false
+    id 'org.springframework.boot' version '3.5.14' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
 allprojects {
@@ -24,32 +24,31 @@ subprojects {
     repositories {
         mavenCentral()
     }
-    dependencyManagement {
-        imports {
-            mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
-        }
-        dependencies {
-            dependency "org.springframework.ai:spring-ai-starter-model-ollama:$springAiStarterModelOllamaVersion"
 
-            dependency "io.github.lognet:grpc-spring-boot-starter:$grpcSpringBootStarterVersion"
+    dependencyManagement {
+        dependencies {
+            dependency "org.springframework.ai:spring-ai-starter-model-ollama:${rootProject.findProperty('springAiStarterModelOllamaVersion')}"
+            dependency "io.github.lognet:grpc-spring-boot-starter:${rootProject.findProperty('grpcSpringBootStarterVersion')}"
 
             //database
-            dependency "org.postgresql:r2dbc-postgresql:$r2dbcPostgresqlVersion"
-            dependency "org.postgresql:postgresql:$postgresqlVersion"
-            dependency "org.flywaydb:flyway-core:$flywayVersion"
-            dependency "org.flywaydb:flyway-database-postgresql:$flywayVersion"
+            dependency "org.postgresql:r2dbc-postgresql:${rootProject.findProperty('r2dbcPostgresqlVersion')}"
+            dependency "org.postgresql:postgresql:${rootProject.findProperty('postgresqlVersion')}"
+            dependency "org.flywaydb:flyway-core:${rootProject.findProperty('flywayVersion')}"
+            dependency "org.flywaydb:flyway-database-postgresql:${rootProject.findProperty('flywayVersion')}"
 
-            dependency "org.jsoup:jsoup:$jsoupVersion"
-            dependency "com.google.guava:guava:$googleGuavaVersion"
-            dependency "org.mapstruct:mapstruct:$mapstructVersion"
-            dependency "org.mapstruct:mapstruct-processor:$mapstructVersion"
-            dependency "io.jsonwebtoken:jjwt-api:$jsonwebtokenVersion"
-            dependency "io.jsonwebtoken:jjwt-impl:$jsonwebtokenVersion"
-            dependency "io.jsonwebtoken:jjwt-jackson:$jsonwebtokenVersion"
-            dependency "com.fasterxml.jackson.core:jackson-databind:$fasterxmlJacksonCore"
-            dependency "javax.annotation:javax.annotation-api:$javaxAnnotationVersion"
-//
-            dependency "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
+            dependency "org.jsoup:jsoup:${rootProject.findProperty('jsoupVersion')}"
+            dependency "com.google.guava:guava:${rootProject.findProperty('googleGuavaVersion')}"
+            dependency "org.mapstruct:mapstruct:${rootProject.findProperty('mapstructVersion')}"
+            dependency "org.mapstruct:mapstruct-processor:${rootProject.findProperty('mapstructVersion')}"
+
+            dependency "io.jsonwebtoken:jjwt-api:${rootProject.findProperty('jsonwebtokenVersion')}"
+            dependency "io.jsonwebtoken:jjwt-impl:${rootProject.findProperty('jsonwebtokenVersion')}"
+            dependency "io.jsonwebtoken:jjwt-jackson:${rootProject.findProperty('jsonwebtokenVersion')}"
+            dependency "com.fasterxml.jackson.core:jackson-databind:${rootProject.findProperty('fasterxmlJacksonCore')}"
+            dependency "javax.annotation:javax.annotation-api:${rootProject.findProperty('javaxAnnotationVersion')}"
+
+            dependency "org.junit.platform:junit-platform-launcher:${rootProject.findProperty('junitPlatformVersion')}"
+
         }
     }
     dependencies {

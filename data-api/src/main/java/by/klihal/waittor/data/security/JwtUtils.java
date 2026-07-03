@@ -16,7 +16,7 @@ public class JwtUtils {
 
     // В реальном проекте вынесите это в application.yml (минимум 32 символа)
     private final String SECRET_KEY = "my-super-secret-key-for-jwt-authentication-which-is-long-enough";
-    private final long EXPIRATION_TIME = 1000 * 60 * 30; // 0.5 час
+    private final long EXPIRATION_TIME = 1000 * 60 * 60; // час
 
     // Генерация Access Token (внутри будут username и роли)
     public String generateAccessToken(UserDetails userDetails) {

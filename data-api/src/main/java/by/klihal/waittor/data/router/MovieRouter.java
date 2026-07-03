@@ -16,12 +16,12 @@ public class MovieRouter {
     @Bean
     public RouterFunction<ServerResponse> torRoutes(MovieHandler handler) {
         return route()
-                .path("/api/movies", builder -> builder
+                .path("/movies", builder -> builder
                         .GET("", accept(MediaType.APPLICATION_JSON), handler::showPage)
                         .POST("", handler::save)
-                        .PUT("/{id}", handler::update)
+                        .PUT("/{id:\\d+}", handler::update)
                         .GET("/check", handler::checkTorrents)
-                        .DELETE("/{id}", handler::delete)
+                        .DELETE("/{id:\\d+}", handler::delete)
                 )
                 .build();
     }
