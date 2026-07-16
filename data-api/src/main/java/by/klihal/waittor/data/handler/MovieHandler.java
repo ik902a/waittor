@@ -23,9 +23,15 @@ public class MovieHandler {
     }
 
     public Mono<ServerResponse> showPage(ServerRequest request) {
+        String search = request.queryParam("search").orElse("");
+        String sortBy = request.queryParam("sort").orElse("id");
+        String order = request.queryParam("order").orElse("asc");
+        int page = request.queryParam("page").map(Integer::parseInt).orElse(0);
+        int size = request.queryParam("size").map(Integer::parseInt).orElse(30);
+
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(torService.findAll(), TorDto.class);
+                .body(torService.findAll(search, sortBy, order, page, size), TorDto.class);
     }
 
     // Примечание: @Valid и @ModelAttribute в функциональном стиле обрабатываются вручную.
