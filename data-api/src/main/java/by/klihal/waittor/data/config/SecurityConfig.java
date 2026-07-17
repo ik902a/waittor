@@ -50,7 +50,11 @@ public class SecurityConfig {
 
                 .authenticationManager(authenticationManager(userDetailsService, passwordEncoder()))
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/auth/**").permitAll() // Разрешаем вход, регистрацию и рефреш
+                        .pathMatchers("/auth/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/webjars/**").permitAll() // Разрешаем вход, регистрацию и рефреш
                         .anyExchange().authenticated()
                 )
                 // КРИТИЧЕСКОЕ ДОБАВЛЕНИЕ: Отключаем всплывающее окно браузера для неавторизованных запросов
